@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Authentication.Entities
+namespace AuthenticationContext.Entities
 {
     public class RefreshToken
     {

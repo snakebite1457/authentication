@@ -7,7 +7,8 @@ using System.Web;
 using System.Web.Http;
 using Authentication.Models;
 using Authentication.Results;
-using Authentication.Util;
+using AuthenticationContext.Models;
+using AuthenticationContext.Util;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -53,7 +54,6 @@ namespace Authentication.Controllers
 
             return Ok("Check your email and confirm your account, you must be confirmed before you can log in.");
         }
-
 
         [AllowAnonymous]
         [Route("ForgotPassword")]

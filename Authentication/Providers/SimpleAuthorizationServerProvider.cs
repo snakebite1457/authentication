@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Authentication.Entities;
-using Authentication.Models;
-using Authentication.Util;
+using AuthenticationContext.Entities;
+using AuthenticationContext.Models;
+using AuthenticationContext.Util;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Authentication.Entities;
-using Authentication.Models;
+using AuthenticationContext.Entities;
+using AuthenticationContext.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 
-namespace Authentication.Util
+namespace AuthenticationContext.Util
 {
     public class AuthRepository : IDisposable
     {
@@ -22,6 +22,11 @@ namespace Authentication.Util
             _authContext = new AuthContext();
             _userManager = context.GetUserManager<ApplicationUserManager>() ?? ApplicationUserManager.Create(_authContext);
         }
+
+        public IEnumerable<IdentityUser> GetAllUsers()
+        {
+            return _userManager.Users;
+        } 
 
         public async Task<IdentityUser> FindUser(string email, string password)
         {

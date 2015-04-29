@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
-using Authentication.Entities;
-using Authentication.Models;
-using Authentication.Util;
+using AuthenticationContext.Entities;
+using AuthenticationContext.Models;
+using AuthenticationContext.Util;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace Authentication.Migrations
+namespace AuthenticationContext.Migrations
 {
     internal sealed class Configuration : DbMigrationsConfiguration<AuthContext>
     {
@@ -44,9 +44,9 @@ namespace Authentication.Migrations
                 },
                 new Client
                 {
-                    Id = "consoleApp",
-                    Secret = Helper.GetHash("123@abc"),
-                    Name = "Console Application",
+                    Id = "subPrintApi",
+                    Secret = Helper.GetHash(@"HwHp9YygV4Jt8dM5C2%Y5mez67X@^"),
+                    Name = "SubPrint API Application",
                     ApplicationType = ApplicationTypes.NativeConfidential,
                     Active = true,
                     RefreshTokenLifeTime = 14400,

@@ -3,14 +3,13 @@ using System.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using AuthenticationContext.Util;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security.DataProtection;
 using SendGrid;
 
-namespace Authentication
+namespace AuthenticationContext.Util
 {
     public class EmailService : IIdentityMessageService
     {

@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web.WebPages.Html;
-using Microsoft.AspNet.Identity;
+using System.Web.Mvc;
 
-namespace Authentication.Models
+namespace AuthenticationContext.Models
 {
+    public class UserModel
+    {
+        public string UserId { get; set; }
+
+        public string UserName { get; set; }
+    }
+
     public class SendCodeModel
     {
         public string SelectedProvider { get; set; }
@@ -75,7 +81,7 @@ namespace Authentication.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
         [Required]
@@ -101,7 +107,7 @@ namespace Authentication.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }

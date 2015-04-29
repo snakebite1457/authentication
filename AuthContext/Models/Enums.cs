@@ -1,5 +1,5 @@
 ﻿
-namespace Authentication.Models
+namespace AuthenticationContext.Models
 {
     public enum ApplicationTypes
     {

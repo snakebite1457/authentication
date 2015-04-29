@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Web.Http;
 using Authentication;
-using Authentication.Migrations;
 using Authentication.Providers;
-using Authentication.Util;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
@@ -32,8 +29,6 @@ namespace Authentication
             WebApiConfig.Register(config);
             app.UseCors(CorsOptions.AllowAll);
             app.UseWebApi(config);
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<AuthContext, Configuration>());
-
         }
 
         public void ConfigureOAuth(IAppBuilder app)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Authentication.Entities;
-using Authentication.Util;
+using AuthenticationContext.Entities;
+using AuthenticationContext.Util;
 using Microsoft.Owin.Security.Infrastructure;
 
 namespace Authentication.Providers

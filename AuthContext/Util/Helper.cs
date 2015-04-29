@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Authentication.Util
+namespace AuthenticationContext.Util
 {
     public class Helper
     {

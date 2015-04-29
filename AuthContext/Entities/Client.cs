@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Authentication.Models;
+using AuthenticationContext.Models;
 
-namespace Authentication.Entities
+namespace AuthenticationContext.Entities
 {
     public class Client
     {
