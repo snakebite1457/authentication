@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity.Migrations;
+using System.Data.Entity;
 using System.Linq;
 using AuthenticationContext.Entities;
 using AuthenticationContext.Models;
@@ -8,12 +8,12 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AuthenticationContext.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<AuthContext>
+    internal sealed class AuthContextDbInit : DropCreateDatabaseIfModelChanges<AuthContext>
     {
-        public Configuration()
+        public AuthContextDbInit()
         {
-            AutomaticMigrationsEnabled = true;
-            AutomaticMigrationDataLossAllowed = true;
+            //AutomaticMigrationsEnabled = true;
+            //AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(AuthContext context)

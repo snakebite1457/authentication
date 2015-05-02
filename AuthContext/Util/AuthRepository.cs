@@ -19,6 +19,7 @@ namespace AuthenticationContext.Util
 
         public AuthRepository(IOwinContext context)
         {
+
             _authContext = new AuthContext();
             _userManager = context.GetUserManager<ApplicationUserManager>() ?? ApplicationUserManager.Create(_authContext);
         }
@@ -39,6 +40,29 @@ namespace AuthenticationContext.Util
             return user;
         }
 
+        public async Task<IdentityUser> FindUser(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user;
+        }
+
+        public async Task<IdentityUser> FindUserByUserName(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            return user;
+        } 
+
+        public IQueryable GetAllUserNames()
+        {
+            var result = from user in _authContext.Users
+                select new
+                {
+                    UserName = user.UserName
+                };
+
+            return result;
+        }
+
         public async Task<bool> IsUserConfirmed(IdentityUser user)
         {
             return await _userManager.IsEmailConfirmedAsync(user.Id);
@@ -52,10 +76,9 @@ namespace AuthenticationContext.Util
         public async Task SendEmailConfirmationTokenEmail(string userId, string host)
         {
 
-            var user = _userManager.FindByIdAsync(userId);
             string code = await _userManager.GenerateEmailConfirmationTokenAsync(userId);
             var callbackUrl = string.Format("Please confirm your email by clicking <a href=\"{0}/#confirmemail?userId={1}&code={2}\">here</a>",
-                   host, user.Id, HttpUtility.UrlEncode(code));
+                   host, userId, HttpUtility.UrlEncode(code));
 
             await SendEmailAsync(userId, "Confirm your account", callbackUrl);
         }

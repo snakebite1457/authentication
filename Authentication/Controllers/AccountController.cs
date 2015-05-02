@@ -86,14 +86,14 @@ namespace Authentication.Controllers
 
         [AllowAnonymous]
         [Route("ConfirmEmail")]
-        public async Task<IHttpActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IHttpActionResult> ConfirmEmail(ConfirmEmailModel model)
         {
-            if (userId == null || code == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest("UserId or code incorrect");
             }
 
-            var result = await _repo.ConfirmEmail(userId, code);
+            var result = await _repo.ConfirmEmail(model.UserId, model.Code);
             if (result.Succeeded)
             {
                 return Ok("Thank you for confirming your email");

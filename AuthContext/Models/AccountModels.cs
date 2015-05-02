@@ -46,6 +46,15 @@ namespace AuthenticationContext.Models
         public string ClientId { get; set; }
     }
 
+    public class ConfirmEmailModel
+    {
+        [Required]
+        public string UserId { get; set; }
+
+        [Required]
+        public string Code { get; set; }
+    }
+
     public class LoginModel
     {
         [Required]
