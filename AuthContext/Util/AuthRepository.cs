@@ -68,6 +68,16 @@ namespace AuthenticationContext.Util
             return await _userManager.IsEmailConfirmedAsync(user.Id);
         }
 
+        public async Task<IdentityUser> FindUserByIdAsync(string id)
+        {
+            return await _userManager.FindByIdAsync(id);
+        }
+
+        public IdentityUser FindUserById(string id)
+        {
+            return _userManager.FindById(id);
+        }
+
         public async Task SendEmailAsync(string userId, string subject, string body)
         {
             await _userManager.SendEmailAsync(userId, subject, body);

@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthenticationContext.Entities;
 using AuthenticationContext.Models;
 using AuthenticationContext.Util;
+using Microsoft.Owin;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 
@@ -82,6 +86,15 @@ namespace Authentication.Providers
 
             var identity = new ClaimsIdentity(context.Options.AuthenticationType);
 
+
+            var props = new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    { 
+                        "as:client_id", context.ClientId ?? string.Empty
+                    }
+                }
+            );
+
             using (AuthRepository repo = new AuthRepository(context.OwinContext))
             {
                 // Require the user to have a confirmed email before they can log on.
@@ -109,24 +122,29 @@ namespace Authentication.Providers
                 }
 
                 identity.AddClaim(new Claim("sub", context.UserName));
+
+                props.Dictionary.Add(new KeyValuePair<string, string>
+                (
+                    "email", user.Email
+                ));
+
+                props.Dictionary.Add(new KeyValuePair<string, string>
+                (
+                    "username", user.UserName
+                ));
             }
 
-            var props = new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    { 
-                        "as:client_id", context.ClientId ?? string.Empty
-                    },
-                    { 
-                        "userName", context.UserName
-                    }
-                });
-
             var ticket = new AuthenticationTicket(identity, props);
+
+            //var currentUtc = new SystemClock().UtcNow;
+            //ticket.Properties.IssuedUtc = currentUtc;
+            //ticket.Properties.ExpiresUtc = currentUtc.Add(TimeSpan.FromSeconds(90));
+
             context.Validated(ticket);
 
         }
 
-        public override Task GrantRefreshToken(OAuthGrantRefreshTokenContext context)
+        public override async Task GrantRefreshToken(OAuthGrantRefreshTokenContext context)
         {
             var originalClient = context.Ticket.Properties.Dictionary["as:client_id"];
             var currentClient = context.ClientId;
@@ -134,23 +152,34 @@ namespace Authentication.Providers
             if (originalClient != currentClient)
             {
                 context.SetError("invalid_clientId", "Refresh token is issued to a different clientId.");
-                return Task.FromResult<object>(null);
+                return;
             }
 
             // Change auth ticket for refresh token requests
             var newIdentity = new ClaimsIdentity(context.Ticket.Identity);
 
-            //var newClaim = newIdentity.Claims.FirstOrDefault(c => c.Type == "newClaim");
-            //if (newClaim != null)
-            //{
-            //    newIdentity.RemoveClaim(newClaim);
-            //}
-            //newIdentity.AddClaim(new Claim("newClaim", "newValue"));
+            var currentRole = newIdentity.Claims.Where(c => c.Type == ClaimTypes.Role);
+            foreach (var role in currentRole)
+            {
+                newIdentity.RemoveClaim(role);
+            }
+
+            using (AuthRepository repo = new AuthRepository(context.OwinContext))
+            {
+                var user = await repo.FindUser(context.Ticket.Identity.Name);
+                foreach (var role in await repo.GetUserRoles(user.Id))
+                {
+                    newIdentity.AddClaim(new Claim(ClaimTypes.Role, role));
+                }
+            }
 
             var newTicket = new AuthenticationTicket(newIdentity, context.Ticket.Properties);
-            context.Validated(newTicket);
 
-            return Task.FromResult<object>(null);
+            var currentUtc = new SystemClock().UtcNow;
+            newTicket.Properties.IssuedUtc = currentUtc;
+            newTicket.Properties.ExpiresUtc = currentUtc.Add(TimeSpan.FromSeconds(90));
+
+            context.Validated(newTicket);
         }
 
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)
