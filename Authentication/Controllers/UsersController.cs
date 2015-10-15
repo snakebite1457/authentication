@@ -14,7 +14,7 @@ namespace Authentication.Controllers
 
         public UsersController()
         {
-            _repo = new AuthRepository(HttpContext.Current.GetOwinContext());
+            _repo = new AuthRepository(HttpContext.Current.GetOwinContext(), Startup.DataProtectionProvider);
         }
 
         [Authorize(Roles = "Admin")]

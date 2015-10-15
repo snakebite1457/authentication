@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using AuthenticationContext.Entities;
 using AuthenticationContext.Models;
 using AuthenticationContext.Util;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
+using WebGrease.Css.Extensions;
 
 namespace Authentication.Providers
 {
@@ -36,7 +39,7 @@ namespace Authentication.Providers
                 return Task.FromResult<object>(null);
             }
 
-            using (AuthRepository repo = new AuthRepository(context.OwinContext))
+            using (AuthRepository repo = new AuthRepository(context.OwinContext, Startup.DataProtectionProvider))
             {
                 _client = repo.FindClient(context.ClientId);
             }
@@ -95,7 +98,7 @@ namespace Authentication.Providers
                 }
             );
 
-            using (AuthRepository repo = new AuthRepository(context.OwinContext))
+            using (AuthRepository repo = new AuthRepository(context.OwinContext, Startup.DataProtectionProvider))
             {
                 // Require the user to have a confirmed email before they can log on.
                 var user = await repo.FindUser(context.UserName, context.Password);
@@ -132,6 +135,11 @@ namespace Authentication.Providers
                 (
                     "username", user.UserName
                 ));
+
+                props.Dictionary.Add(new KeyValuePair<string, string>
+               (
+                   "roles", Json.Encode((await repo.GetUserRoles(user.Id)))
+               ));
             }
 
             var ticket = new AuthenticationTicket(identity, props);
@@ -164,9 +172,9 @@ namespace Authentication.Providers
                 newIdentity.RemoveClaim(role);
             }
 
-            using (AuthRepository repo = new AuthRepository(context.OwinContext))
+            using (AuthRepository repo = new AuthRepository(context.OwinContext, Startup.DataProtectionProvider))
             {
-                var user = await repo.FindUser(context.Ticket.Identity.Name);
+                var user = repo.FindUser(context.Ticket.Identity.Name);
                 foreach (var role in await repo.GetUserRoles(user.Id))
                 {
                     newIdentity.AddClaim(new Claim(ClaimTypes.Role, role));
@@ -174,10 +182,6 @@ namespace Authentication.Providers
             }
 
             var newTicket = new AuthenticationTicket(newIdentity, context.Ticket.Properties);
-
-            var currentUtc = new SystemClock().UtcNow;
-            newTicket.Properties.IssuedUtc = currentUtc;
-            newTicket.Properties.ExpiresUtc = currentUtc.Add(TimeSpan.FromSeconds(90));
 
             context.Validated(newTicket);
         }

@@ -13,7 +13,7 @@ namespace Authentication.Controllers
 
         public RefreshTokensController()
         {
-            _repo = new AuthRepository(HttpContext.Current.GetOwinContext());
+            _repo = new AuthRepository(HttpContext.Current.GetOwinContext(), Startup.DataProtectionProvider);
         }
 
         [Authorize(Users = "Admin")]

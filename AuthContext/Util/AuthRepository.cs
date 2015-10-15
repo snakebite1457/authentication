@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace AuthenticationContext.Util
 {
@@ -17,11 +18,11 @@ namespace AuthenticationContext.Util
         private readonly AuthContext _authContext;
         private readonly ApplicationUserManager _userManager;
 
-        public AuthRepository(IOwinContext context)
+        public AuthRepository(IOwinContext context, IDataProtectionProvider dataProtectionProvider)
         {
 
             _authContext = new AuthContext();
-            _userManager = context.GetUserManager<ApplicationUserManager>() ?? ApplicationUserManager.Create(_authContext);
+            _userManager = context.GetUserManager<ApplicationUserManager>() ?? ApplicationUserManager.Create(_authContext, dataProtectionProvider);
         }
 
         public IEnumerable<IdentityUser> GetAllUsers()
@@ -40,9 +41,9 @@ namespace AuthenticationContext.Util
             return user;
         }
 
-        public async Task<IdentityUser> FindUser(string email)
+        public IdentityUser FindUser(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = _userManager.FindByEmail(email);
             return user;
         }
 
@@ -85,12 +86,20 @@ namespace AuthenticationContext.Util
 
         public async Task SendEmailConfirmationTokenEmail(string userId, string host)
         {
+            try
+            {
+                string code = await _userManager.GenerateEmailConfirmationTokenAsync(userId);
+                var callbackUrl = string.Format("Please confirm your email by clicking <a href=\"{0}/#confirmemail?userId={1}&code={2}\">here</a>",
+                       host, userId, HttpUtility.UrlEncode(code));
 
-            string code = await _userManager.GenerateEmailConfirmationTokenAsync(userId);
-            var callbackUrl = string.Format("Please confirm your email by clicking <a href=\"{0}/#confirmemail?userId={1}&code={2}\">here</a>",
-                   host, userId, HttpUtility.UrlEncode(code));
+                await SendEmailAsync(userId, "Confirm your account", callbackUrl);
+            }
+            catch (Exception ex)
+            {
+                int a = 41;
+            }
 
-            await SendEmailAsync(userId, "Confirm your account", callbackUrl);
+        
         }
 
         public async Task<IdentityResult> ResetPassword(ResetPasswordModel resetPasswordModel)

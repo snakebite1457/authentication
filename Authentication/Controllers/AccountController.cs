@@ -31,7 +31,7 @@ namespace Authentication.Controllers
 
         public AccountController()
         {
-            _repo = new AuthRepository(HttpContext.Current.GetOwinContext());
+            _repo = new AuthRepository(HttpContext.Current.GetOwinContext(), Startup.DataProtectionProvider);
         }
 
         // POST api/Account/Register

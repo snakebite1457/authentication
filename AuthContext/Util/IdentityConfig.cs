@@ -23,11 +23,10 @@ namespace AuthenticationContext.Util
         private static async Task ConfigSendGridasync(IdentityMessage message)
         {
             var sendGridMessage = new SendGridMessage();
-            //myMessage.AddTo(message.Destination);
+            sendGridMessage.AddTo(message.Destination);
            
-            
             // Debug
-            sendGridMessage.AddTo("dennis.mail206@gmail.com");
+            //sendGridMessage.AddTo("dennis.mail206@gmail.com");
 
             sendGridMessage.From = new MailAddress("norepley@subprint.de", "SubPrint");
             sendGridMessage.Subject = message.Subject;
@@ -35,8 +34,8 @@ namespace AuthenticationContext.Util
             sendGridMessage.Html = message.Body;
 
             var credentials = new NetworkCredential(
-                ConfigurationManager.AppSettings["mailAccount"],
-                ConfigurationManager.AppSettings["mailPassword"]
+                ConfigurationManager.AppSettings["sendGridAccount"],
+                ConfigurationManager.AppSettings["sendGridPassword"]
                 );
 
             // Create a Web transport for sending email.
@@ -56,9 +55,9 @@ namespace AuthenticationContext.Util
         }
 
 
-        public static ApplicationUserManager Create(AuthContext context)
+        public static ApplicationUserManager Create(AuthContext context, IDataProtectionProvider dataProtectionProvider)
         {
-            var provider = new DpapiDataProtectionProvider("Sample");
+            var provider = dataProtectionProvider;
 
             var manager = new ApplicationUserManager(new UserStore<IdentityUser>(context));
             // Configure validation logic for usernames

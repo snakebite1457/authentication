@@ -20,7 +20,7 @@ namespace Authentication.Providers
 
             var refreshTokenId = Guid.NewGuid().ToString("n");
 
-            using (AuthRepository repo = new AuthRepository(context.OwinContext))
+            using (AuthRepository repo = new AuthRepository(context.OwinContext, Startup.DataProtectionProvider))
             {
                 var refreshTokenLifeTime = context.OwinContext.Get<string>("as:clientRefreshTokenLifeTime");
 
@@ -56,7 +56,7 @@ namespace Authentication.Providers
 
             string hashedTokenId = Helper.GetHash(context.Token);
 
-            using (AuthRepository repo = new AuthRepository(context.OwinContext))
+            using (AuthRepository repo = new AuthRepository(context.OwinContext, Startup.DataProtectionProvider))
             {
                 var refreshToken = await repo.FindRefreshToken(hashedTokenId);
 

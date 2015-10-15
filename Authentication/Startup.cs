@@ -9,6 +9,7 @@ using Microsoft.Owin.Security.Facebook;
 using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
+using Microsoft.Owin.Security.DataProtection;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -19,6 +20,8 @@ namespace Authentication
         public static OAuthBearerAuthenticationOptions OAuthBearerOptions { get; private set; }
         public static GoogleOAuth2AuthenticationOptions GoogleAuthOptions { get; private set; }
         public static FacebookAuthenticationOptions FacebookAuthOptions { get; private set; }
+
+        internal static IDataProtectionProvider DataProtectionProvider { get; private set; }
 
         public void Configuration(IAppBuilder app)
         {
@@ -33,6 +36,8 @@ namespace Authentication
 
         public void ConfigureOAuth(IAppBuilder app)
         {
+            DataProtectionProvider = app.GetDataProtectionProvider();
+
             //use a cookie to temporarily store information about a user logging in with a third party login provider
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
             OAuthBearerOptions = new OAuthBearerAuthenticationOptions();
@@ -42,8 +47,7 @@ namespace Authentication
 
                 AllowInsecureHttp = true,
                 TokenEndpointPath = new PathString("/token"),
-                //AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(30),
-                AccessTokenExpireTimeSpan = TimeSpan.FromSeconds(10),
+                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(1),
                 Provider = new SimpleAuthorizationServerProvider(),
                 RefreshTokenProvider = new SimpleRefreshTokenProvider()
             };

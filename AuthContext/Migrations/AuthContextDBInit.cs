@@ -4,6 +4,7 @@ using System.Linq;
 using AuthenticationContext.Entities;
 using AuthenticationContext.Models;
 using AuthenticationContext.Util;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace AuthenticationContext.Migrations
@@ -25,6 +26,23 @@ namespace AuthenticationContext.Migrations
 
             context.Clients.AddRange(BuildClientsList());
             BuildIdentityRoles().ToList().ForEach(role => context.Roles.Add(role));
+
+            var userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(context));
+
+            IdentityUser admin = new IdentityUser
+            {
+                EmailConfirmed = true,
+                Email = "dennis.mail206@gmail.com",
+                UserName = "Admin"
+            };
+
+            var result = userManager.Create(admin, "braveheart0");
+            if (result.Succeeded)
+            {
+                var currentUser = userManager.FindByEmail(admin.Email);
+                userManager.AddToRole(currentUser.Id, "Admin");
+            }
+
             context.SaveChanges();
         }
 
